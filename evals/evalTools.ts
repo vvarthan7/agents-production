@@ -49,7 +49,7 @@ const calculateAvgScore = (runs: Run[]) => {
 }
 
 export const loadExperiment = async (
-  experimentName: string
+  experimentName: string,
 ): Promise<Experiment | undefined> => {
   const db = await getDb()
   return db.data.experiments.find((e) => e.name === experimentName)
@@ -57,7 +57,7 @@ export const loadExperiment = async (
 
 export const saveSet = async (
   experimentName: string,
-  runs: Omit<Run, 'createdAt'>[]
+  runs: Omit<Run, 'createdAt'>[],
 ) => {
   const db = await getDb()
 
@@ -73,7 +73,7 @@ export const saveSet = async (
   }
 
   const existingExperiment = db.data.experiments.find(
-    (e) => e.name === experimentName
+    (e) => e.name === experimentName,
   )
 
   if (existingExperiment) {
@@ -98,7 +98,7 @@ export const runEval = async <T = any>(
     task: (input: any) => Promise<T>
     data: { input: any; expected?: T; reference?: string | string[] }[]
     scorers: Scorer<T, any>[]
-  }
+  },
 ) => {
   const results = await Promise.all(
     data.map(async ({ input, expected, reference }) => {
@@ -126,7 +126,7 @@ export const runEval = async <T = any>(
             name: score.name,
             score: score.score,
           }
-        })
+        }),
       )
 
       const result = {
@@ -137,7 +137,7 @@ export const runEval = async <T = any>(
       }
 
       return result
-    })
+    }),
   )
 
   const previousExperiment = await loadExperiment(experiment)
@@ -150,15 +150,15 @@ export const runEval = async <T = any>(
     ? scoreDiff > 0
       ? chalk.green
       : scoreDiff < 0
-      ? chalk.red
-      : chalk.blue
+        ? chalk.red
+        : chalk.blue
     : chalk.blue
 
   console.log(`Experiment: ${experiment}`)
   console.log(`Previous score: ${color(previousScore.toFixed(2))}`)
   console.log(`Current score: ${color(currentScore.toFixed(2))}`)
   console.log(
-    `Difference: ${scoreDiff > 0 ? '+' : ''}${color(scoreDiff.toFixed(2))}`
+    `Difference: ${scoreDiff > 0 ? '+' : ''}${color(scoreDiff.toFixed(2))}`,
   )
   console.log()
 
