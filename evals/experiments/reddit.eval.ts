@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { runLLM } from '../../src/llm'
 import { redditToolDefinition } from '../../src/tools/reddit'
 import { runEval } from '../evalTools'
