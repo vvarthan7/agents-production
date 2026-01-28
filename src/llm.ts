@@ -46,7 +46,7 @@ export const runApprovalCheck = async (userMessage: string) => {
           .boolean()
           .describe('did the user approve the action or not'),
       }),
-      'approval'
+      'approval',
     ),
     messages: [
       {
@@ -58,4 +58,15 @@ export const runApprovalCheck = async (userMessage: string) => {
   })
 
   return result.choices[0].message.parsed?.approved
+}
+
+export const summarizeMessages = async (messages: AIMessage[]) => {
+  const response = await runLLM({
+    systemPrompt:
+      'Summarize the key points of the conversation in a concise way that would be helpful as context for future interactions. Make it like a play by play of the conversation.',
+    messages,
+    temperature: 0.3,
+  })
+
+  return response.content || ''
 }
