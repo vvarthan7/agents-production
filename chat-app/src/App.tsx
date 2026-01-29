@@ -44,12 +44,14 @@ function App() {
       const data = await response.json()
       if (data.messages) {
         setMessages(
-          data.messages.map((msg: { role: string; content: string; timestamp: string }) => ({
-            id: crypto.randomUUID(),
-            role: msg.role as 'user' | 'assistant',
-            content: msg.content,
-            timestamp: new Date(msg.timestamp),
-          }))
+          data.messages.map(
+            (msg: { role: string; content: string; timestamp: string }) => ({
+              id: crypto.randomUUID(),
+              role: msg.role as 'user' | 'assistant',
+              content: msg.content,
+              timestamp: new Date(msg.timestamp),
+            }),
+          ),
         )
       }
     } catch (error) {
@@ -97,7 +99,8 @@ function App() {
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'error',
-        content: error instanceof Error ? error.message : 'Something went wrong',
+        content:
+          error instanceof Error ? error.message : 'Something went wrong',
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])
@@ -116,22 +119,25 @@ function App() {
   }
 
   return (
-    <div className="chat-container">
-      <header className="chat-header">
-        <h1>
-          <span className="status-indicator"></span>
+    <div className="w-full max-w-[800px] h-[90vh] max-h-[800px] bg-white/5 backdrop-blur-[10px] rounded-[20px] border border-white/10 flex flex-col overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+      <header className="p-5 px-6 bg-white/8 border-b border-white/10 flex justify-between items-center">
+        <h1 className="text-xl font-semibold text-white flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse-custom"></span>
           AI Chat Agent
         </h1>
-        <button className="clear-btn" onClick={handleClear}>
+        <button
+          className="px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm cursor-pointer transition-all duration-200 hover:bg-red-500/30 hover:border-red-500/50"
+          onClick={handleClear}
+        >
           Clear Chat
         </button>
       </header>
 
-      <div className="messages-container">
+      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4 custom-scrollbar">
         {messages.length === 0 && (
-          <div className="welcome-message">
-            <h2>Welcome!</h2>
-            <p>
+          <div className="text-center py-10 px-5 text-white/60">
+            <h2 className="text-2xl text-white/90 mb-3">Welcome!</h2>
+            <p className="text-[0.95rem] leading-relaxed">
               Start a conversation with the AI agent. You can ask for jokes,
               search for movies, get Reddit posts, or generate images.
             </p>
@@ -139,10 +145,19 @@ function App() {
         )}
 
         {messages.map((message) => (
-          <div key={message.id} className={`message ${message.role}`}>
+          <div
+            key={message.id}
+            className={`max-w-[80%] px-[18px] py-3.5 rounded-2xl leading-relaxed text-[0.95rem] animate-fade-in break-words ${
+              message.role === 'user'
+                ? 'self-end bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-[4px]'
+                : message.role === 'assistant'
+                  ? 'self-start bg-white/10 border border-white/10 rounded-bl-[4px]'
+                  : 'self-center bg-red-500/20 border border-red-500/30 text-red-300'
+            }`}
+          >
             <div>{message.content}</div>
             {message.toolCalls && message.toolCalls.length > 0 && (
-              <div className="tool-badge">
+              <div className="inline-block px-2.5 py-1 bg-green-500/20 border border-green-500/30 rounded-md text-xs text-green-300 mt-2">
                 Used: {message.toolCalls.map((t) => t.name).join(', ')}
               </div>
             )}
@@ -150,27 +165,31 @@ function App() {
         ))}
 
         {isLoading && (
-          <div className="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
+          <div className="flex gap-1 px-[18px] py-3.5 bg-white/10 rounded-2xl rounded-bl-[4px] self-start">
+            <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce-typing typing-dot-1"></span>
+            <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce-typing typing-dot-2"></span>
+            <span className="w-2 h-2 bg-white/50 rounded-full animate-bounce-typing typing-dot-3"></span>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="input-container">
-        <form className="input-form" onSubmit={handleSubmit}>
+      <div className="p-5 bg-white/5 border-t border-white/10">
+        <form className="flex gap-3" onSubmit={handleSubmit}>
           <input
             type="text"
-            className="message-input"
+            className="flex-1 px-[18px] py-3.5 bg-white/8 border border-white/15 rounded-xl text-white text-[0.95rem] outline-none transition-all duration-200 placeholder:text-white/40 focus:border-blue-500/50 focus:bg-white/10"
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
           />
-          <button type="submit" className="send-btn" disabled={isLoading || !input.trim()}>
+          <button
+            type="submit"
+            className="px-6 py-3.5 bg-gradient-to-br from-blue-500 to-blue-600 border-none rounded-xl text-white text-[0.95rem] font-medium cursor-pointer transition-all duration-200 flex items-center gap-2 hover:enabled:-translate-y-0.5 hover:enabled:shadow-[0_4px_12px_rgba(59,130,246,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading || !input.trim()}
+          >
             Send
           </button>
         </form>
