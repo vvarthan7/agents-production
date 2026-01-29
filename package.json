@@ -4,6 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "npx tsx index.ts",
+    "server": "npx tsx server/index.ts",
+    "chat": "npm run server & cd chat-app && npm run dev",
+    "chat:install": "cd chat-app && npm install",
     "eval": "npx tsx evals/run.ts $1",
     "ingest": "npx tsx src/rag/ingest.ts"
   },
