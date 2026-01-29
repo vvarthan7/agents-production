@@ -176,3 +176,4 @@ dist
 .env
 
 db.json
+chat-db.json
